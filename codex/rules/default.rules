@@ -1,0 +1,114 @@
+# Faster GitHub read workflows (outside sandbox)
+prefix_rule(
+    pattern = ["gh", "pr", "view"],
+    decision = "allow",
+    justification = "PR metadata reads are safe and frequently used",
+    match = [
+        "gh pr view 7888",
+        "gh pr view --repo owner/repo",
+    ],
+    not_match = [
+        "gh pr --repo owner/repo view 7888",
+    ],
+)
+
+prefix_rule(
+    pattern = ["gh", "pr", "checks"],
+    decision = "allow",
+    justification = "PR checks inspection is read-only",
+)
+
+prefix_rule(
+    pattern = ["gh", "run", "view"],
+    decision = "allow",
+    justification = "GitHub Actions run inspection is read-only",
+)
+
+# Keep destructive operations gated
+prefix_rule(
+    pattern = ["git", "push"],
+    decision = "allow",
+    justification = "Allow normal feature-branch pushes without approval friction.",
+)
+
+prefix_rule(
+    pattern = ["git", "push", "origin", ["main", "master"]],
+    decision = "prompt",
+    justification = "Pushing directly to protected branches requires explicit confirmation.",
+    match = [
+        "git push origin main",
+        "git push origin master",
+    ],
+    not_match = [
+        "git push origin feature/codex-setup",
+    ],
+)
+
+prefix_rule(
+    pattern = ["git", "push", ["-u", "--set-upstream"], "origin", ["main", "master"]],
+    decision = "prompt",
+    justification = "Setting upstream to protected branches requires explicit confirmation.",
+)
+
+prefix_rule(
+    pattern = ["git", "push", "origin", ["HEAD:main", "HEAD:master"]],
+    decision = "prompt",
+    justification = "Refspec pushes to protected branches require explicit confirmation.",
+)
+
+prefix_rule(
+    pattern = ["git", "push", "--force"],
+    decision = "forbidden",
+    justification = "Force push is destructive. Use a normal push or open a new branch.",
+)
+
+prefix_rule(
+    pattern = ["git", "push", "-f"],
+    decision = "forbidden",
+    justification = "Force push is destructive. Use a normal push or open a new branch.",
+)
+
+prefix_rule(
+    pattern = ["git", "push", "--force-with-lease"],
+    decision = "forbidden",
+    justification = "Force-with-lease can still rewrite history. Use a normal push.",
+)
+
+prefix_rule(
+    pattern = ["git", "push", "origin", "--delete", ["main", "master"]],
+    decision = "forbidden",
+    justification = "Deleting protected branches is blocked.",
+)
+
+prefix_rule(
+    pattern = ["git", "reset", "--hard"],
+    decision = "forbidden",
+    justification = "Hard reset discards uncommitted work.",
+)
+
+prefix_rule(
+    pattern = ["git", "clean", "-fdx"],
+    decision = "prompt",
+    justification = "Cleaning ignored/untracked files can remove important local artifacts.",
+)
+
+prefix_rule(
+    pattern = ["rm"],
+    decision = "prompt",
+    justification = "File deletion requires explicit confirmation in this repository.",
+    match = [
+        "rm README.md",
+    ],
+)
+
+prefix_rule(
+    pattern = ["rm", "-rf"],
+    decision = "prompt",
+    justification = "Recursive deletion needs explicit review.",
+)
+
+prefix_rule(
+    pattern = ["sudo", "rm", "-rf"],
+    decision = "forbidden",
+    justification = "Elevated recursive deletion is blocked.",
+)

@@ -149,6 +149,27 @@ SKIP=no-commit-to-branch pre-commit run --all-files
 現在の推奨:
 - `origin` は SSH (`git@github.com:...`) を使用。
 - HTTPS 認証問題で詰まりにくい。
+- `main` / `master` へ直接 commit / push しない。`feature/*` ブランチ経由で PR マージする。
+
+### 6.1 標準ブランチ運用（推奨）
+
+```bash
+# 1) main を最新化
+git checkout main
+git pull origin main
+
+# 2) 作業ブランチを切る（例）
+git checkout -b feature/update-codex-docs
+
+# 3) 変更をコミット
+git add .
+git commit -m "docs: codex運用ドキュメントを更新"
+
+# 4) feature ブランチを push
+git push -u origin feature/update-codex-docs
+```
+
+その後、GitHub 上で `feature/update-codex-docs` -> `main` の PR を作成してマージします。
 
 確認:
 ```bash
@@ -181,7 +202,9 @@ python3 -m pip install --user pre-commit
 
 ## 8. 変更時のおすすめ手順
 
-1. `.claude/commands` を更新
-2. `bash codex/scripts/install_claude_commands_as_prompts.sh`
-3. `SKIP=no-commit-to-branch pre-commit run --all-files`
-4. 影響範囲を `docs/00_共通/codex/` 配下ドキュメントへ反映
+1. `git checkout -b feature/<task-name>` で作業ブランチを作成
+2. `.claude/commands` を更新
+3. `bash codex/scripts/install_claude_commands_as_prompts.sh`
+4. `SKIP=no-commit-to-branch pre-commit run --all-files`
+5. `git push -u origin feature/<task-name>` で push
+6. 影響範囲を `docs/00_共通/codex/` 配下ドキュメントへ反映し、PR を作成

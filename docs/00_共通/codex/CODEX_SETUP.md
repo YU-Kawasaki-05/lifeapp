@@ -55,6 +55,21 @@ This repository has been prepared from `codex-template-kit` with project-specifi
 - `sudo rm -rf *` -> `forbidden`
 - protected branch plain push (`git push` / `git push origin` while on `main|master`) -> `deny` by hook, requires explicit refspec
 
+## Git workflow baseline
+- Default workflow is `feature/*` branch based development.
+- Do not commit/push directly to `main` / `master`.
+- Open a PR from `feature/*` to `main` for merge.
+
+### Recommended command sequence
+```bash
+git checkout main
+git pull origin main
+git checkout -b feature/<task-name>
+git add .
+git commit -m "<type>: <summary>"
+git push -u origin feature/<task-name>
+```
+
 ## Local git guardrails (pre-commit)
 - Config file: `/.pre-commit-config.yaml`
 - Hooks introduced:
