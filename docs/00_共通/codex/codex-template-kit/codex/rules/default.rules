@@ -1,0 +1,27 @@
+# Prompt before running selected GitHub CLI commands outside the sandbox.
+prefix_rule(
+    pattern = ["gh", "pr", "view"],
+    decision = "prompt",
+    justification = "Viewing PRs is allowed with approval",
+    match = [
+        "gh pr view 7888",
+        "gh pr view --repo owner/repo",
+    ],
+    not_match = [
+        "gh pr --repo owner/repo view 7888",
+    ],
+)
+
+# Deny force pushes by default.
+prefix_rule(
+    pattern = ["git", "push", "--force"],
+    decision = "deny",
+    justification = "Force push is destructive and should be blocked by default",
+)
+
+# Prompt before deleting files recursively.
+prefix_rule(
+    pattern = ["rm", "-rf"],
+    decision = "prompt",
+    justification = "Recursive deletion needs explicit review",
+)

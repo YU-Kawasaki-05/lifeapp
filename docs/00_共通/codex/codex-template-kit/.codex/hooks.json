@@ -1,0 +1,51 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ./.codex/hooks/session_start.py",
+            "statusMessage": "Loading workspace conventions"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ./.codex/hooks/check_bash_command.py",
+            "statusMessage": "Checking Bash safety"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ./.codex/hooks/post_bash_review.py",
+            "statusMessage": "Reviewing Bash output"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ./.codex/hooks/stop_summary.py",
+            "statusMessage": "Writing stop summary"
+          }
+        ]
+      }
+    ]
+  }
+}
